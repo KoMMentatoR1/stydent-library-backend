@@ -32,9 +32,6 @@ export class BookHistory extends Model {
   })
   role: IStatus
 
-  @Column({ type: DataType.STRING, allowNull: true })
-  expiredIn: string
-
   @ForeignKey(() => User)
   @Column
   userId: number

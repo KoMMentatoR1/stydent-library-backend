@@ -1,4 +1,4 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript'
+import { Column, DataType, Model, Table } from 'sequelize-typescript'
 
 export enum IRole {
   ADMIN = 'ADMIN',
@@ -20,7 +20,7 @@ export class User extends Model {
   firstName: string
 
   @Column({ type: DataType.STRING, allowNull: false })
-  latsName: string
+  lastName: string
 
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string
@@ -30,15 +30,6 @@ export class User extends Model {
 
   @Column({ type: DataType.STRING, allowNull: false })
   password: string
-
-  @Column({ type: DataType.BOOLEAN, defaultValue: false })
-  isActivated: boolean
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  activationLink: string
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  switchKey: string
 
   @Column({
     type: DataType.ENUM('ADMIN', 'LIBRARIAN', 'USER'),

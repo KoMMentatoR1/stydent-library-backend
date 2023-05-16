@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Redirect,
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
@@ -23,17 +22,10 @@ export class UserController {
   @ApiOperation({ summary: 'Создание пользователя' })
   @ApiResponse({ status: 201, type: User })
   @UseGuards(RolesGuard)
-  @Roles('USER')
+  @Roles('ADMIN')
   @Post('/create')
   create(@Body() Dto: CreateUserDto) {
     return this.UserService.createUser(Dto)
-  }
-
-  @Get('/activ/:value')
-  @Redirect('http://localhost:3000/login')
-  async activation(@Param('value') value: string) {
-    const fuser = await this.UserService.activate(value)
-    return { url: 'http://localhost:3000/main' }
   }
 
   @ApiOperation({ summary: 'Поиск пользователя по почте' })
@@ -79,5 +71,10 @@ export class UserController {
   @Get('/allUsersData')
   AllUsersData() {
     return this.UserService.getUsersData()
+  }
+
+  @Post('/generateAdmin')
+  async generateAdmin() {
+    return this.UserService.generateAdmin()
   }
 }

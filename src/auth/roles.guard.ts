@@ -42,8 +42,6 @@ export class RolesGuard implements CanActivate {
         secret: process.env.PRIVATE_KEY,
       })
 
-      console.log(user)
-
       req.user = user
       return requiredRoles.includes(user.role)
     } catch (e) {

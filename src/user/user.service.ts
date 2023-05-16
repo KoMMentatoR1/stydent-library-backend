@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
 import { CreateUserDto } from './dto/createUser.dto'
 import { IRole, User } from 'src/models/User.model'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -11,10 +12,13 @@ export class UserService {
   ) {}
 
   async createUser(dto: CreateUserDto) {
+    const hashPassword = await bcrypt.hash(this.generatePassword(), 5)
     const user = await this.userModel.create({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      phoneNumber: dto.phoneNumber,
       email: dto.email,
-      password: dto.password,
-      activationLink: dto.activationLink,
+      password: hashPassword,
     })
 
     return user
@@ -24,8 +28,6 @@ export class UserService {
     if (!user) {
       throw new HttpException('Пользователь не найдена', HttpStatus.NOT_FOUND)
     }
-    console.log(role)
-
     user.role = role
     await user.save()
     return user
@@ -44,8 +46,8 @@ export class UserService {
   async getUserByEmail(email: string) {
     const user = await this.userModel.findOne({
       where: { email },
-      include: { all: true },
     })
+
     return user
   }
 
@@ -59,18 +61,27 @@ export class UserService {
     await this.userModel.destroy({ where: { id } })
   }
 
-  async getUserByCode(code: string) {
-    return this.userModel.findOne({ where: { switchKey: code } })
+  async generateAdmin() {
+    const hashPassword = await bcrypt.hash('admin', 5)
+    const user = await this.userModel.create({
+      firstName: 'admin',
+      lastName: 'admin',
+      email: 'admin',
+      phoneNumber: '00000000',
+      password: hashPassword,
+      role: IRole.ADMIN,
+    })
+    return true
   }
 
-  async activate(value: string) {
-    const user = await this.userModel.findOne({
-      where: { activationLink: value },
-    })
-    if (user) {
-      user.update({ isActivated: true })
-      return user
+  generatePassword() {
+    var length = 8,
+      charset =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      retVal = ''
+    for (var i = 0, n = charset.length; i < length; ++i) {
+      retVal += charset.charAt(Math.floor(Math.random() * n))
     }
-    throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND)
+    return retVal
   }
 }

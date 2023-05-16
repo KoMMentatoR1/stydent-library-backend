@@ -22,7 +22,7 @@ export class Book extends Model {
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   title: string
 
-  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  @Column({ type: DataType.TEXT, unique: true, allowNull: false })
   description: string
 
   @ForeignKey(() => Author)
